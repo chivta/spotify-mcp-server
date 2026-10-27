@@ -119,6 +119,14 @@ export async function serveHttp(
       return;
     }
 
+    if (url.pathname === '/mcp') {
+      res.once('finish', () =>
+        console.error(
+          `${req.method} /mcp ${res.statusCode}${req.headers.authorization ? ' bearer' : ''} ${req.headers['user-agent'] ?? '-'}`,
+        ),
+      );
+    }
+
     // Protected resource metadata (RFC 9728). Served unauthenticated and
     // without the loopback Host/Origin guards so external MCP clients can
     // discover the authorization server. Only present in auth mode.
@@ -169,6 +177,7 @@ export async function serveHttp(
           tokenError = error;
         }
         if (tokenError) {
+          console.error('Spotify token validation failed:', tokenError);
           let status: number = 502;
           if (
             tokenError instanceof Error &&

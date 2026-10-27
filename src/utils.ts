@@ -660,7 +660,9 @@ export async function validateSpotifyToken(accessToken: string): Promise<void> {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   if (response.status === 401) {
-    const error = new Error('Spotify rejected the access token') as Error & {
+    const error = new Error(
+      `Spotify rejected the access token: ${await response.text()}`,
+    ) as Error & {
       status?: number;
     };
     error.status = 401;
@@ -668,7 +670,7 @@ export async function validateSpotifyToken(accessToken: string): Promise<void> {
   }
   if (!response.ok) {
     const error = new Error(
-      `Spotify token validation failed (${response.status})`,
+      `Spotify token validation failed (${response.status}): ${await response.text()}`,
     ) as Error & { status?: number };
     error.status = response.status;
     throw error;
