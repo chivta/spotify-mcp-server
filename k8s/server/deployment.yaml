@@ -21,7 +21,7 @@ spec:
         runAsGroup: 1001
       containers:
         - name: spotify-mcp
-          image: ghcr.io/chivta/spotify-mcp-server:sha-f37d3a006e5e3f8e34ea3e168897212ef7d87108
+          image: ghcr.io/chivta/spotify-mcp-server:sha-2bec8d069c2e8403105acd7b503f3421f3cf8382
           ports:
             - name: http
               containerPort: 3000
