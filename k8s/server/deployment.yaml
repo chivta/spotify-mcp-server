@@ -15,6 +15,10 @@ spec:
       labels:
         app: spotify-mcp
     spec:
+      # The node's resolvers instead of CoreDNS: musl (node:alpine) fails to
+      # resolve api.spotify.com through the cluster resolver, same as song-bot.
+      # The server talks to nothing inside the cluster.
+      dnsPolicy: Default
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
