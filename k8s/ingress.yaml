@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spotify-mcp
+  labels:
+    app: spotify-mcp
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: spotify-mcp.chivtar.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: spotify-mcp
+                port:
+                  name: http

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spotify-mcp
+  labels:
+    app: spotify-mcp
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: spotify-mcp
+  template:
+    metadata:
+      labels:
+        app: spotify-mcp
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+        - name: spotify-mcp
+          image: ghcr.io/chivta/spotify-mcp-server:placeholder
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            # Repeats the image default on purpose: without it /mcp is unauthenticated on a public host.
+            - name: MCP_AUTH
+              value: spotify
+            # Bare origin: the server appends /.well-known/oauth-protected-resource in its 401 challenges.
+            - name: SPOTIFY_RESOURCE_URL
+              value: https://spotify-mcp.chivtar.dev
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          # No /health endpoint; this one answers 200 without auth.
+          livenessProbe:
+            httpGet:
+              path: /.well-known/oauth-protected-resource
+              port: http
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /.well-known/oauth-protected-resource
+              port: http
+            periodSeconds: 10
